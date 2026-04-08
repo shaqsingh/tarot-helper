@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+/* Catppuccin Macchiato — https://github.com/catppuccin/catppuccin */
+@theme {
+  --color-ctp-crust: #181926;
+  --color-ctp-mantle: #1e2030;
+  --color-ctp-base: #24273a;
+  --color-ctp-surface0: #363a4f;
+  --color-ctp-surface1: #494d64;
+  --color-ctp-surface2: #5b6078;
+  --color-ctp-overlay0: #6e738d;
+  --color-ctp-overlay1: #8087a2;
+  --color-ctp-overlay2: #939ab7;
+  --color-ctp-subtext0: #a5adcb;
+  --color-ctp-subtext1: #b8c0e0;
+  --color-ctp-text: #cad3f5;
+  --color-ctp-blue: #8aadf4;
+  --color-ctp-lavender: #b7bdf8;
+  --color-ctp-red: #ed8796;
+  --color-ctp-mauve: #c6a0f6;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ctp-base);
+  color: var(--color-ctp-text);
+  color-scheme: dark;
+}
