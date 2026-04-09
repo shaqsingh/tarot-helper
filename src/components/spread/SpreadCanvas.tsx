@@ -6,6 +6,7 @@ import {
   clamp01,
   normalizeRotationDeg,
   snapRotationIfNearby,
+  snapAlignIfNearby,
 } from '@/features/spread/canvasRules'
 import {
   addPositionAt,
@@ -38,6 +39,7 @@ export function SpreadCanvas({
   const canvasRef = useRef<HTMLDivElement>(null)
   const spreadRef = useRef(spread)
   const [draggingId, setDraggingId] = useState<string | null>(null)
+  const dragStartPosRef = useRef<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     spreadRef.current = spread
@@ -67,11 +69,30 @@ export function SpreadCanvas({
   useEffect(() => {
     if (!draggingId) return
     const id = draggingId
+    const startPos = spreadRef.current.positions.find(p => p.id === id)
+    if (!startPos) return
+
     const onMove = (e: PointerEvent) => {
       const { x, y } = toNorm(e.clientX, e.clientY)
-      onChange(patchPosition(spreadRef.current, id, { x, y }))
+
+      // Only apply snap alignment when shift key is held
+      if (e.shiftKey) {
+        // Get other positions for snap alignment
+        const otherPositions = spreadRef.current.positions
+          .filter(p => p.id !== id)
+          .map(p => ({ x: p.x, y: p.y }))
+
+        // Apply snap alignment
+        const snapped = snapAlignIfNearby(x, y, otherPositions)
+        onChange(patchPosition(spreadRef.current, id, { x: snapped.x, y: snapped.y }))
+      } else {
+        onChange(patchPosition(spreadRef.current, id, { x, y }))
+      }
     }
-    const onUp = () => setDraggingId(null)
+    const onUp = () => {
+      setDraggingId(null)
+      dragStartPosRef.current = null
+    }
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
     window.addEventListener('pointercancel', onUp)
@@ -119,16 +140,16 @@ export function SpreadCanvas({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col space-y-2">
-      <p className="text-xs text-ctp-overlay0">
-        Click empty area to add a card. Drag the card to move. Use the rotation
-        grip to rotate. Arrow keys nudge position.
+      <p className="text-xs text-ctp-overlay0" id="canvas-instructions">
+        Tap empty area to add a card. Drag to move. Use rotation grip to rotate. Hold Shift while dragging to snap-align with other cards.
       </p>
       <div
         ref={canvasRef}
         role="application"
         aria-label="Spread layout canvas"
+        aria-describedby="canvas-instructions"
         tabIndex={0}
-        className="relative min-h-0 flex-1 w-full min-w-0 cursor-crosshair rounded-lg border border-ctp-surface1 bg-ctp-surface0/40 outline-none focus-visible:ring-2 focus-visible:ring-ctp-lavender"
+        className="canvas-atmosphere relative min-h-0 flex-1 w-full min-w-0 cursor-crosshair rounded-lg border border-ctp-surface1 outline-none focus-visible:ring-2 focus-visible:ring-ctp-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ctp-base"
         onClick={(e) => {
           if (e.target !== e.currentTarget) return
           const { x, y } = toNorm(e.clientX, e.clientY)
@@ -211,24 +232,33 @@ export function SpreadCanvas({
               }}
             >
               <div className="relative flex flex-col items-center">
-                <button
-                  type="button"
-                  aria-label={`Rotate ${p.label}`}
-                  className="z-20 mb-0.5 flex h-4 w-7 cursor-grab items-center justify-center rounded border border-ctp-surface2 bg-ctp-surface1 text-[10px] text-ctp-subtext0 hover:bg-ctp-surface2"
-                  onClick={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => startRotate(e, p)}
-                >
-                  ↻
-                </button>
+                {/* Rotation grip - reserve space to prevent layout shift */}
+                <div className="z-20 mb-1 h-11 w-11 md:h-6 md:w-8">
+                  {selected ? (
+                    <button
+                      type="button"
+                      aria-label={`Rotate ${p.label}`}
+                      className="rotate-grip flex h-11 w-11 cursor-grab items-center justify-center rounded-full border border-ctp-surface2 bg-ctp-surface1 text-sm text-ctp-subtext0 hover:bg-ctp-surface2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-gold md:h-6 md:w-8 md:rounded-md md:text-[10px]"
+                      onClick={(e) => e.stopPropagation()}
+                      onPointerDown={(e) => startRotate(e, p)}
+                    >
+                      ↻
+                    </button>
+                  ) : null}
+                </div>
+                {/* Card - responsive sizing with minimum touch target */}
                 <div
                   role="button"
-                  tabIndex={-1}
+                  tabIndex={selected ? 0 : -1}
                   aria-label={aria}
                   aria-pressed={selected}
-                  className={`flex h-[6.75rem] w-[4.875rem] cursor-grab touch-none flex-col items-center justify-center rounded-md border px-1 py-0.5 text-center text-[10px] font-medium leading-tight active:cursor-grabbing ${selected
-                    ? 'border-ctp-lavender bg-ctp-surface2 text-ctp-text ring-2 ring-ctp-lavender ring-offset-2 ring-offset-ctp-base'
-                    : 'border-ctp-surface2 bg-ctp-surface1 text-ctp-subtext1 hover:bg-ctp-surface2'
-                    }`}
+                  className={`tarot-card flex h-20 w-14 cursor-grab touch-none flex-col items-center justify-center rounded-lg border px-1 py-1 text-center text-xs font-medium leading-tight active:cursor-grabbing min-h-11 min-w-11 md:h-[6.75rem] md:w-[4.875rem] md:rounded-md md:px-1 md:py-0.5 ${
+                    selected
+                      ? 'selected border-ctp-gold bg-ctp-surface2 text-ctp-text ring-2 ring-ctp-gold ring-offset-2 ring-offset-ctp-base focus-visible:outline-none'
+                      : filled
+                      ? 'tarot-card-filled border-ctp-gold/30 bg-ctp-surface1 text-ctp-subtext1 hover:bg-ctp-surface2'
+                      : 'border-ctp-surface2 bg-ctp-surface1 text-ctp-subtext1 hover:bg-ctp-surface2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-gold'
+                  }`}
                   onClick={(e) => {
                     e.stopPropagation()
                     onSelectId(p.id)
@@ -238,35 +268,43 @@ export function SpreadCanvas({
                     e.stopPropagation()
                     e.preventDefault()
                     onSelectId(p.id)
-                      ; (e.currentTarget as HTMLElement).setPointerCapture(
-                        e.pointerId,
-                      )
+                    ;(e.currentTarget as HTMLElement).setPointerCapture(
+                      e.pointerId,
+                    )
                     setDraggingId(p.id)
                   }}
                 >
                   {filled && placement ? (
-                    <span className="line-clamp-3">
+                    <span className="line-clamp-3 text-[15px]">
                       {placement.card.name}
-                      {placement.reversed ? ' reversed' : ''}
+                      {placement.reversed ? ' (Reversed)' : ''}
                     </span>
                   ) : (
-                    <span className="text-sm tabular-nums">{n}</span>
+                    <span
+                      className="text-xl tabular-nums"
+                      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    >
+                      {n}
+                    </span>
                   )}
                 </div>
-                {selected ? (
-                  <button
-                    type="button"
-                    aria-label={`Delete ${p.label}`}
-                    className="mt-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full border border-ctp-red/50 bg-ctp-surface1 text-xs text-ctp-red hover:bg-ctp-red/20"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onChange(removePosition(spreadRef.current, p.id))
-                      onSelectId(null)
-                    }}
-                  >
-                    ×
-                  </button>
-                ) : null}
+                {/* Delete button - reserve space to prevent layout shift */}
+                <div className="mt-1.5 h-11 w-11 md:h-5 md:w-5">
+                  {selected ? (
+                    <button
+                      type="button"
+                      aria-label={`Delete ${p.label}`}
+                      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-ctp-red/50 bg-ctp-surface1 text-base text-ctp-red hover:bg-ctp-red/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-gold md:h-5 md:w-5 md:text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onChange(removePosition(spreadRef.current, p.id))
+                        onSelectId(null)
+                      }}
+                    >
+                      ×
+                    </button>
+                  ) : null}
+                </div>
               </div>
             </div>
           )

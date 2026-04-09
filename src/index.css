@@ -1,23 +1,43 @@
 @import 'tailwindcss';
 
-/* Catppuccin Macchiato — https://github.com/catppuccin/catppuccin */
+/*
+ * Mystical Tarot Palette
+ * Deep velvet blacks, aged gold, candlelight warmth
+ * Designed for contemplative practice — atmospheric but not theatrical
+ */
 @theme {
-  --color-ctp-crust: #181926;
-  --color-ctp-mantle: #1e2030;
-  --color-ctp-base: #24273a;
-  --color-ctp-surface0: #363a4f;
-  --color-ctp-surface1: #494d64;
-  --color-ctp-surface2: #5b6078;
-  --color-ctp-overlay0: #6e738d;
-  --color-ctp-overlay1: #8087a2;
-  --color-ctp-overlay2: #939ab7;
-  --color-ctp-subtext0: #a5adcb;
-  --color-ctp-subtext1: #b8c0e0;
-  --color-ctp-text: #cad3f5;
-  --color-ctp-blue: #8aadf4;
-  --color-ctp-lavender: #b7bdf8;
-  --color-ctp-red: #ed8796;
-  --color-ctp-mauve: #c6a0f6;
+  /* Deep backgrounds — velvet night */
+  --color-ctp-crust: #0a0a0f; /* Darkest — true night */
+  --color-ctp-mantle: #12121a; /* Deep charcoal with purple undertone */
+  --color-ctp-base: #1a1a24; /* Primary background */
+
+  /* Surfaces — layered depth */
+  --color-ctp-surface0: #252532; /* Elevated surfaces */
+  --color-ctp-surface1: #32323f; /* Cards, panels */
+  --color-ctp-surface2: #42424f; /* Borders, dividers */
+
+  /* Muted text — smoke and shadow */
+  --color-ctp-overlay0: #787892; /* Dimmest text — WCAG AA compliant (improved contrast) */
+  --color-ctp-overlay1: #7a7a8e; /* Secondary muted */
+  --color-ctp-overlay2: #9a9aae; /* Primary muted */
+  --color-ctp-subtext0: #b0b0c0; /* Subtle text */
+  --color-ctp-subtext1: #c8c8d4; /* Body text secondary */
+  --color-ctp-text: #e8e8f0; /* Primary text — moonlit */
+
+  /* Accents — aged gold and candlelight */
+  --color-ctp-gold: #d4a84b; /* Primary accent — aged gold */
+  --color-ctp-gold-dim: #a07830; /* Muted gold */
+  --color-ctp-amber: #e8a040; /* Candlelight glow */
+  --color-ctp-lavender: #b8a0d8; /* Soft mystical purple (keeping for compatibility) */
+  --color-ctp-mauve: #a080c0; /* Deeper purple */
+
+  /* Semantic colors */
+  --color-ctp-red: #c86060; /* Error — dried blood */
+  --color-ctp-blue: #6080b0; /* Info — twilight */
+  --color-ctp-pink: #c08090; /* Major arcana — rose gold */
+
+  /* Legacy compatibility */
+  --color-ctp-blue: #7090b8;
 }
 
 body {
@@ -25,4 +45,288 @@ body {
   background-color: var(--color-ctp-base);
   color: var(--color-ctp-text);
   color-scheme: dark;
+  font-family: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Display font for titles and key moments */
+.font-display {
+  font-family:
+    'Cormorant Garamond', 'Palatino Linetype', 'Book Antiqua', Palatino, serif;
+}
+
+/* Headings use display font */
+h1,
+h2,
+h3 {
+  font-family:
+    'Cormorant Garamond', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+
+/* Small caps for labels */
+.text-label {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Card names — slightly larger, more presence */
+.text-card-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* === Atmospheric Delight === */
+
+/* Canvas background — subtle radial glow like candlelight */
+.canvas-atmosphere {
+  background:
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(212, 168, 75, 0.03) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      var(--color-ctp-crust) 0%,
+      var(--color-ctp-mantle) 100%
+    );
+}
+
+/* Tarot card styling — feels like actual cards */
+.tarot-card {
+  /* Subtle inner shadow for depth */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+}
+
+.tarot-card:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(212, 168, 75, 0.08);
+}
+
+.tarot-card.selected {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 24px rgba(212, 168, 75, 0.15);
+}
+
+/* Filled cards get a subtle gold accent border */
+.tarot-card-filled {
+  border-color: rgba(212, 168, 75, 0.3);
+}
+
+/* Rotation grip — more mystical feel */
+.rotate-grip {
+  opacity: 0.6;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.rotate-grip:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Empty canvas state — evocative instruction */
+.canvas-empty-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0.4;
+  max-width: 200px;
+}
+
+.canvas-empty-hint p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.875rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--color-ctp-subtext0);
+}
+
+/* === Polish: Consistent Interaction States === */
+
+/* Focus states for keyboard navigation */
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible {
+  outline: 2px solid var(--color-ctp-gold);
+  outline-offset: 2px;
+}
+
+/* Button hover lift */
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Form input polish */
+input[type='text'],
+textarea {
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+input[type='text']:hover,
+textarea:hover {
+  border-color: var(--color-ctp-surface2);
+}
+
+/* Checkbox polish */
+input[type='checkbox'] {
+  accent-color: var(--color-ctp-gold);
+}
+
+input[type='checkbox']:checked {
+  background-color: var(--color-ctp-gold);
+}
+
+/* Link underline animation */
+a {
+  transition: color 0.15s ease;
+}
+
+/* Scrollbar polish */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-ctp-mantle);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ctp-surface1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ctp-surface2);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === Mobile Optimizations === */
+
+/* Increase base font size on mobile for better readability */
+@media (max-width: 767px) {
+  body {
+    font-size: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.125rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  /* Ensure inputs don't zoom on iOS */
+  input[type='text'],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  /* Add safe area padding for notched devices */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+}
+
+/* === Screen Reader Only === */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus,
+.sr-only:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* === Focus Visible Improvements === */
+/* Ensure focus-visible is consistent across browsers */
+:focus-visible {
+  outline: 2px solid var(--color-ctp-gold);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline when using focus-visible */
+:focus:not(:focus-visible) {
+  outline: none;
 }

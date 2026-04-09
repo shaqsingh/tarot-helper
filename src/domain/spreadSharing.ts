@@ -15,15 +15,17 @@ export function encodeSpreadToUrl(spread: Spread): string {
       y: Math.round(pos.y * 1000) / 1000,
       r: pos.rotationDeg,
     })),
-    c: spread.positions.map((pos) => {
-      const placement = spread.placements[pos.id]
-      if (!placement) return null
-      return {
-        i: pos.id,
-        cid: placement.card.id,
-        rev: placement.reversed ? 1 : 0,
-      }
-    }).filter(Boolean),
+    c: spread.positions
+      .map((pos) => {
+        const placement = spread.placements[pos.id]
+        if (!placement) return null
+        return {
+          i: pos.id,
+          cid: placement.card.id,
+          rev: placement.reversed ? 1 : 0,
+        }
+      })
+      .filter(Boolean),
   }
 
   const json = JSON.stringify(minimalSpread)
@@ -45,19 +47,36 @@ export function decodeSpreadFromUrl(encoded: string): Spread | null {
     const data = JSON.parse(json)
 
     // Reconstruct positions with IDs
-    const positions = data.p.map((p: { l: string; o: number; x: number; y: number; r: number }, i: number) => ({
-      id: data.c?.[i]?.i || crypto.randomUUID(),
-      label: p.l || '',
-      order: p.o,
-      x: p.x,
-      y: p.y,
-      rotationDeg: p.r || 0,
-    }))
+    const positions = data.p.map(
+      (
+        p: { l: string; o: number; x: number; y: number; r: number },
+        i: number,
+      ) => ({
+        id: data.c?.[i]?.i || crypto.randomUUID(),
+        label: p.l || '',
+        order: p.o,
+        x: p.x,
+        y: p.y,
+        rotationDeg: p.r || 0,
+      }),
+    )
 
     // Reconstruct placements
-    const placements: Record<string, { card: { id: string; name: string; arcana: string; suit?: string; rank?: number | string }; reversed: boolean }> = {}
+    const placements: Record<
+      string,
+      {
+        card: {
+          id: string
+          name: string
+          arcana: string
+          suit?: string
+          rank?: number | string
+        }
+        reversed: boolean
+      }
+    > = {}
 
-    for (const c of (data.c || [])) {
+    for (const c of data.c || []) {
       if (!c || !c.i || !c.cid) continue
 
       // Reconstruct minimal card object

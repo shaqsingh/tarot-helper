@@ -56,9 +56,9 @@ export function HomePage() {
 
   return (
     <>
-      <div className="mx-auto max-w-3xl space-y-8 text-ctp-subtext1 pb-20">
+      <div className="mx-auto max-w-3xl space-y-8 text-ctp-subtext1 pb-20 md:pb-4">
         <section className="space-y-3">
-          <h2 className="text-sm font-medium text-ctp-subtext0">Active spread</h2>
+          <h2 className="text-label text-ctp-subtext0">Active spread</h2>
           <p className="text-xs text-ctp-overlay0">
             Use the Spread layout column for the canvas. Toggle Show details to
             hide this panel.
@@ -68,14 +68,16 @@ export function HomePage() {
             <input
               type="text"
               value={spread.name}
-              onChange={(e) => updateSpread({ ...spread, name: e.target.value })}
-              className="mt-1 w-full rounded-md border border-ctp-surface1 bg-ctp-mantle px-3 py-2 text-ctp-text outline-none focus:border-ctp-lavender"
+              onChange={(e) =>
+                updateSpread({ ...spread, name: e.target.value })
+              }
+              className="mt-1 w-full rounded-md border border-ctp-surface1 bg-ctp-mantle px-4 py-3 text-ctp-text outline-none focus:border-ctp-gold focus-visible:ring-2 focus-visible:ring-ctp-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ctp-base min-h-11"
             />
           </label>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-sm font-medium text-ctp-subtext0">Cards</h2>
+          <h2 className="text-label text-ctp-subtext0">Cards</h2>
           <p className="text-xs text-ctp-overlay0">
             Name each position, then choose a card from the full 78-card deck.
           </p>
@@ -90,7 +92,7 @@ export function HomePage() {
                   key={p.id}
                   className={
                     resolvedSelectedId === p.id
-                      ? 'rounded-md ring-2 ring-ctp-lavender ring-offset-2 ring-offset-ctp-base'
+                      ? 'rounded-md ring-2 ring-ctp-gold ring-offset-2 ring-offset-ctp-base'
                       : undefined
                   }
                 >
@@ -113,7 +115,7 @@ export function HomePage() {
                               ),
                             })
                           }
-                          className="mt-1 w-full rounded-md border border-ctp-surface1 bg-ctp-mantle px-3 py-2 text-ctp-text outline-none focus:border-ctp-lavender"
+                          className="mt-1 w-full rounded-md border border-ctp-surface1 bg-ctp-mantle px-4 py-3 text-ctp-text outline-none focus:border-ctp-gold focus-visible:ring-2 focus-visible:ring-ctp-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ctp-base min-h-11"
                         />
                       </label>
                       <button
@@ -128,7 +130,7 @@ export function HomePage() {
                             return n
                           })
                         }}
-                        className="shrink-0 rounded-md border border-ctp-surface2 px-3 py-2 text-sm text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-red"
+                        className="shrink-0 rounded-md border border-ctp-surface2 px-4 py-3 text-sm text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-red min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ctp-base"
                       >
                         Remove
                       </button>
@@ -137,7 +139,7 @@ export function HomePage() {
                     <div className="space-y-2">
                       <label className="block text-sm text-ctp-subtext0">
                         Card (type to filter)
-                        <div className="relative mt-1">
+                        <div className="relative mt-1 flex gap-2">
                           <input
                             type="text"
                             value={q}
@@ -149,14 +151,15 @@ export function HomePage() {
                               }))
                               // Check if the value matches a card name and auto-select it
                               const matchedCard = STANDARD_TAROT_CARDS.find(
-                                (c) => c.name.toLowerCase() === value.toLowerCase()
+                                (c) =>
+                                  c.name.toLowerCase() === value.toLowerCase(),
                               )
                               if (matchedCard) {
                                 updateSpread(
                                   setSlotPlacement(spread, p.id, {
                                     card: matchedCard,
                                     reversed: placement?.reversed ?? false,
-                                  })
+                                  }),
                                 )
                               }
                             }}
@@ -168,9 +171,54 @@ export function HomePage() {
                                 }))
                               }
                             }}
-                            className="w-full rounded-md border border-ctp-surface1 bg-ctp-mantle px-3 py-2 pr-8 text-ctp-text outline-none focus:border-ctp-lavender"
+                            className="w-full flex-1 rounded-md border border-ctp-surface1 bg-ctp-mantle px-4 py-3 pr-10 text-ctp-text outline-none focus:border-ctp-gold focus-visible:ring-2 focus-visible:ring-ctp-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ctp-base min-h-11"
                             list={`card-datalist-${p.id}`}
                           />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // Pick a random card
+                              const randomIndex = Math.floor(
+                                Math.random() * STANDARD_TAROT_CARDS.length,
+                              )
+                              const randomCard =
+                                STANDARD_TAROT_CARDS[randomIndex]
+                              // 50% chance of reversed
+                              const isReversed = Math.random() > 0.5
+                              updateSpread(
+                                setSlotPlacement(spread, p.id, {
+                                  card: randomCard,
+                                  reversed: isReversed,
+                                }),
+                              )
+                              setCardQueries((prev) => ({
+                                ...prev,
+                                [p.id]: randomCard.name,
+                              }))
+                            }}
+                            className="shrink-0 rounded-md border border-ctp-gold/40 bg-ctp-gold/10 p-3 hover:bg-ctp-gold/20 min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ctp-base"
+                            aria-label="Random card"
+                            title="Pick a random card"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-5 w-5 text-ctp-gold"
+                              aria-hidden="true"
+                            >
+                              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                              <polyline points="7.5 4.21 12 6.81 16.5 4.21" />
+                              <polyline points="7.5 19.79 7.5 14.6 3 12" />
+                              <polyline points="21 12 16.5 14.6 16.5 19.79" />
+                              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                              <line x1="12" y1="22.08" x2="12" y2="12" />
+                            </svg>
+                          </button>
                           {placement ? (
                             <button
                               type="button"
@@ -182,7 +230,7 @@ export function HomePage() {
                                   return n
                                 })
                               }}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-text"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-gold"
                               aria-label="Clear card"
                             >
                               ×
@@ -195,7 +243,7 @@ export function HomePage() {
                           ))}
                         </datalist>
                       </label>
-                      <label className="flex items-center gap-2 text-sm text-ctp-subtext1">
+                      <label className="flex items-center gap-3 text-sm text-ctp-subtext1 min-h-11 py-2">
                         <input
                           type="checkbox"
                           checked={placement?.reversed ?? false}
@@ -206,10 +254,10 @@ export function HomePage() {
                               setSlotPlacement(spread, p.id, {
                                 card: placement.card,
                                 reversed: e.target.checked,
-                              })
+                              }),
                             )
                           }}
-                          className="size-4 rounded border-ctp-surface2 accent-ctp-mauve disabled:opacity-40"
+                          className="h-5 w-5 rounded border-ctp-surface2 accent-ctp-gold disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-ctp-gold focus-visible:ring-offset-2"
                         />
                         Reversed
                       </label>
@@ -225,7 +273,7 @@ export function HomePage() {
           <div className="pt-4">
             <Link
               to="/meanings"
-              className="block w-full rounded-md border border-ctp-lavender bg-ctp-surface0 px-4 py-3 text-center text-sm font-medium text-ctp-lavender hover:bg-ctp-surface1"
+              className="block w-full rounded-md border border-ctp-gold bg-ctp-surface0 px-4 py-4 text-center text-sm font-medium text-ctp-gold hover:bg-ctp-surface1 min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ctp-base"
             >
               View meanings ({filledCount} card{filledCount !== 1 ? 's' : ''})
             </Link>

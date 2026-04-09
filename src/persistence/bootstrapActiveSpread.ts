@@ -1,14 +1,4 @@
-import type { IDBPDatabase } from 'idb'
 import { SpreadSchema, type Spread } from '@/domain/schemas'
-import type { TarotDBSchema } from '@/persistence/db'
-import {
-  getActiveSpreadId,
-  setActiveSpreadId,
-} from '@/persistence/repositories/metaRepository'
-import {
-  getSpread,
-  saveSpread,
-} from '@/persistence/repositories/spreadsRepository'
 
 export function createDefaultSpread(): Spread {
   return SpreadSchema.parse({
@@ -41,18 +31,4 @@ export function createDefaultSpread(): Spread {
       },
     ],
   })
-}
-
-export async function loadOrCreateActiveSpread(
-  db: IDBPDatabase<TarotDBSchema>,
-): Promise<Spread> {
-  const activeId = await getActiveSpreadId(db)
-  if (activeId) {
-    const existing = await getSpread(db, activeId)
-    if (existing) return existing
-  }
-  const fresh = createDefaultSpread()
-  await saveSpread(db, fresh)
-  await setActiveSpreadId(db, fresh.id)
-  return fresh
 }

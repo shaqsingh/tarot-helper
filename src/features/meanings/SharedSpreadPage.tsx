@@ -2,7 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getCardById } from '@/domain/tarotCatalog'
 import { getCardMeaning } from '@/domain/cardMeanings'
-import { decodeSpreadFromUrl, clearSharedSpreadFromUrl } from '@/domain/spreadSharing'
+import {
+  decodeSpreadFromUrl,
+  clearSharedSpreadFromUrl,
+} from '@/domain/spreadSharing'
 import type { Spread } from '@/domain/types'
 
 export function SharedSpreadPage() {
@@ -39,9 +42,12 @@ export function SharedSpreadPage() {
   if (error) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-ctp-text">Invalid Share Link</h2>
+        <h2 className="text-lg font-semibold text-ctp-text">
+          Invalid Share Link
+        </h2>
         <p className="text-ctp-subtext1">
-          This share link is invalid or has been corrupted. Please ask for a new link.
+          This share link is invalid or has been corrupted. Please ask for a new
+          link.
         </p>
         <Link
           to="/"
@@ -60,7 +66,9 @@ export function SharedSpreadPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-ctp-text">Shared Spread</h2>
+        <h2 className="font-display text-lg font-semibold text-ctp-text">
+          Shared Spread
+        </h2>
         <Link
           to="/"
           className="rounded-md border border-ctp-surface2 px-3 py-1.5 text-sm text-ctp-subtext1 hover:bg-ctp-surface0"
@@ -73,8 +81,12 @@ export function SharedSpreadPage() {
         Spread: <span className="text-ctp-subtext1">{spread.name}</span>
       </p>
 
-      <div className="rounded-md border border-ctp-lavender/30 bg-ctp-lavender/10 px-3 py-2 text-xs text-ctp-lavender">
-        This is a shared spread. <Link to="/" className="underline">Create your own</Link> to save and edit.
+      <div className="rounded-md border border-ctp-gold/30 bg-ctp-gold/10 px-3 py-2 text-xs text-ctp-gold">
+        This is a shared spread.{' '}
+        <Link to="/" className="underline">
+          Create your own
+        </Link>{' '}
+        to save and edit.
       </div>
 
       <ul className="space-y-6">
@@ -91,13 +103,16 @@ export function SharedSpreadPage() {
             : meaning.upright
 
           return (
-            <li key={p.id} className="space-y-2 rounded-lg border border-ctp-surface1 bg-ctp-mantle p-4">
+            <li
+              key={p.id}
+              className="space-y-2 rounded-lg border border-ctp-surface1 bg-ctp-mantle p-4"
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="font-medium text-ctp-text">
+                  <h3 className="font-display font-medium text-ctp-text">
                     #{p.order + 1} {p.label || 'Untitled'}
                   </h3>
-                  <p className="text-sm text-ctp-subtext1">
+                  <p className="text-card-name text-ctp-subtext1">
                     {card.name}
                     {placement.reversed && (
                       <span className="ml-1 text-ctp-mauve">(Reversed)</span>
@@ -121,9 +136,9 @@ export function SharedSpreadPage() {
                 href={meaning.biddyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block text-xs text-ctp-lavender hover:underline"
+                className="inline-block text-xs text-ctp-gold hover:underline"
               >
-                Read more on Biddy Tarot ↗
+                Read more on Biddy Tarot
               </a>
             </li>
           )

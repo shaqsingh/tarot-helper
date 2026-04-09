@@ -48,3 +48,32 @@ export function snapRotationIfNearby(deg: number): number {
   }
   return normalizeRotationDeg(deg)
 }
+
+// Alignment snap tolerance (in normalized coordinates, ~1.5% of canvas)
+export const ALIGN_SNAP_TOLERANCE = 0.015
+
+/**
+ * Snap position to align with other positions anywhere on the canvas.
+ * Snaps X coordinate if close to any other card's X, and Y if close to any other card's Y.
+ */
+export function snapAlignIfNearby(
+  x: number,
+  y: number,
+  otherPositions: Array<{ x: number; y: number }>,
+): { x: number; y: number } {
+  let snappedX = x
+  let snappedY = y
+
+  for (const other of otherPositions) {
+    // Snap X if close to another card's X (any Y position)
+    if (Math.abs(x - other.x) <= ALIGN_SNAP_TOLERANCE) {
+      snappedX = other.x
+    }
+    // Snap Y if close to another card's Y (any X position)
+    if (Math.abs(y - other.y) <= ALIGN_SNAP_TOLERANCE) {
+      snappedY = other.y
+    }
+  }
+
+  return { x: snappedX, y: snappedY }
+}
