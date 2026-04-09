@@ -66,7 +66,7 @@ export function MeaningsPage() {
       setShowImport(false)
       // Force re-render by toggling edit mode
       setEditMode(false)
-    } catch (err) {
+    } catch {
       setImportError('Failed to parse meanings. Please check the format.')
     }
   }

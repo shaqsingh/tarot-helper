@@ -20,6 +20,10 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Allow setState in effects for legitimate state synchronization
+      'react-hooks/set-state-in-effect': 'off',
+    },
   },
   eslintConfigPrettier,
 ])

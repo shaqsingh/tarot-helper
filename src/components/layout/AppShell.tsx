@@ -13,6 +13,96 @@ const DETAILS_WIDTH_MAX = 55
 // Mobile breakpoint - below this, switch to tab-based navigation
 const MOBILE_BREAKPOINT = 768
 
+// Skip link component for accessibility
+function SkipLink() {
+  return (
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-ctp-gold focus:px-4 focus:py-2 focus:text-ctp-base focus:font-medium focus:outline-none"
+    >
+      Skip to main content
+    </a>
+  )
+}
+
+// Mobile tab navigation component
+function MobileTabNav({
+  activeTab,
+  onTabChange,
+}: {
+  activeTab: 'canvas' | 'details'
+  onTabChange: (tab: 'canvas' | 'details') => void
+}) {
+  return (
+    <nav
+      className="flex border-t border-ctp-surface0 bg-ctp-mantle"
+      role="tablist"
+      aria-label="Mobile navigation"
+    >
+      <button
+        type="button"
+        role="tab"
+        aria-selected={activeTab === 'canvas'}
+        aria-controls="canvas-panel"
+        onClick={() => onTabChange('canvas')}
+        className={`flex flex-1 flex-col items-center gap-1 px-4 py-3 text-sm transition-colors ${
+          activeTab === 'canvas'
+            ? 'border-t-2 border-ctp-gold bg-ctp-base text-ctp-gold'
+            : 'text-ctp-subtext0 hover:text-ctp-text'
+        }`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+          aria-hidden="true"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <line x1="3" y1="9" x2="21" y2="9" />
+          <line x1="9" y1="21" x2="9" y2="9" />
+        </svg>
+        <span>Spread</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={activeTab === 'details'}
+        aria-controls="details-panel"
+        onClick={() => onTabChange('details')}
+        className={`flex flex-1 flex-col items-center gap-1 px-4 py-3 text-sm transition-colors ${
+          activeTab === 'details'
+            ? 'border-t-2 border-ctp-gold bg-ctp-base text-ctp-gold'
+            : 'text-ctp-subtext0 hover:text-ctp-text'
+        }`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+          aria-hidden="true"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
+        <span>Details</span>
+      </button>
+    </nav>
+  )
+}
+
 export function AppShell() {
   const detailsPanelOpen = useShellStore((s) => s.detailsPanelOpen)
   const toggleDetailsPanel = useShellStore((s) => s.toggleDetailsPanel)
@@ -57,8 +147,8 @@ export function AppShell() {
 
   const resolvedSelectedId =
     spread &&
-      selectedPositionId &&
-      spread.positions.some((p) => p.id === selectedPositionId)
+    selectedPositionId &&
+    spread.positions.some((p) => p.id === selectedPositionId)
       ? selectedPositionId
       : null
 
@@ -86,9 +176,9 @@ export function AppShell() {
         setDetailsWidthPct(next)
       }
 
-      const onUp = (ev: PointerEvent) => {
+      const onUp = () => {
         resizingRef.current = false
-        grip.releasePointerCapture(ev.pointerId)
+        grip.releasePointerCapture(e.pointerId)
         window.removeEventListener('pointermove', onMove)
         window.removeEventListener('pointerup', onUp)
         window.removeEventListener('pointercancel', onUp)
@@ -107,84 +197,6 @@ export function AppShell() {
       window.addEventListener('pointercancel', onUp)
     },
     [detailsPanelOpen, detailsWidthPct, isMobile],
-  )
-
-  // Skip link for accessibility
-  const SkipLink = () => (
-    <a
-      href="#main-content"
-      className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-ctp-gold focus:px-4 focus:py-2 focus:text-ctp-base focus:font-medium focus:outline-none"
-    >
-      Skip to main content
-    </a>
-  )
-
-  // Mobile tab navigation
-  const MobileTabNav = () => (
-    <nav
-      className="flex border-t border-ctp-surface0 bg-ctp-mantle"
-      role="tablist"
-      aria-label="Mobile navigation"
-    >
-      <button
-        type="button"
-        role="tab"
-        aria-selected={activeMobileTab === 'canvas'}
-        aria-controls="canvas-panel"
-        onClick={() => setActiveMobileTab('canvas')}
-        className={`flex flex-1 flex-col items-center gap-1 px-4 py-3 text-sm transition-colors ${activeMobileTab === 'canvas'
-          ? 'border-t-2 border-ctp-gold bg-ctp-base text-ctp-gold'
-          : 'text-ctp-subtext0 hover:text-ctp-text'
-          }`}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-5 w-5"
-          aria-hidden="true"
-        >
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-          <line x1="3" y1="9" x2="21" y2="9" />
-          <line x1="9" y1="21" x2="9" y2="9" />
-        </svg>
-        <span>Spread</span>
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={activeMobileTab === 'details'}
-        aria-controls="details-panel"
-        onClick={() => setActiveMobileTab('details')}
-        className={`flex flex-1 flex-col items-center gap-1 px-4 py-3 text-sm transition-colors ${activeMobileTab === 'details'
-          ? 'border-t-2 border-ctp-gold bg-ctp-base text-ctp-gold'
-          : 'text-ctp-subtext0 hover:text-ctp-text'
-          }`}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-5 w-5"
-          aria-hidden="true"
-        >
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-          <line x1="16" y1="13" x2="8" y2="13" />
-          <line x1="16" y1="17" x2="8" y2="17" />
-          <polyline points="10 9 9 9 8 9" />
-        </svg>
-        <span>Details</span>
-      </button>
-    </nav>
   )
 
   // Mobile layout
@@ -247,7 +259,7 @@ export function AppShell() {
           </main>
         </div>
 
-        <MobileTabNav />
+        <MobileTabNav activeTab={activeMobileTab} onTabChange={setActiveMobileTab} />
       </div>
     )
   }

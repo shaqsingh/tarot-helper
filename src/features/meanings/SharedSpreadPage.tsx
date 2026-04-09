@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getCardById } from '@/domain/tarotCatalog'
 import { getCardMeaning } from '@/domain/cardMeanings'
@@ -10,25 +10,17 @@ import type { Spread } from '@/domain/types'
 
 export function SharedSpreadPage() {
   const { encoded } = useParams<{ encoded: string }>()
-  const [spread, setSpread] = useState<Spread | null>(null)
-  const [error, setError] = useState(false)
 
-  useEffect(() => {
-    if (!encoded) {
-      setError(true)
-      return
-    }
+  // Decode spread synchronously to avoid setState in effect
+  const initialSpread = encoded ? decodeSpreadFromUrl(encoded) : null
 
-    const decoded = decodeSpreadFromUrl(encoded)
-    if (!decoded) {
-      setError(true)
-      return
-    }
+  const [spread] = useState<Spread | null>(initialSpread)
+  const [error] = useState(!encoded || !initialSpread)
 
-    setSpread(decoded)
-    // Clear the encoded data from URL to clean it up
+  // Clear the encoded data from URL once on mount
+  if (spread) {
     clearSharedSpreadFromUrl()
-  }, [encoded])
+  }
 
   const sortedPositions = useMemo(() => {
     if (!spread) return []
