@@ -1,4 +1,5 @@
 import type { Card } from '@/domain/types'
+import { safeGetItem, safeSetItem, safeRemoveItem, isStorageAvailable } from '@/utils/storage'
 
 export interface CardMeaning {
   upright: string
@@ -678,20 +679,20 @@ let customMeaningsCache: Record<string, Partial<CardMeaning>> | null = null
 function loadCustomMeanings(): Record<string, Partial<CardMeaning>> {
   if (customMeaningsCache) return customMeaningsCache
 
-  if (typeof localStorage === 'undefined') {
+  if (!isStorageAvailable()) {
     customMeaningsCache = {}
     return customMeaningsCache
   }
 
-  try {
-    const raw = localStorage.getItem(CUSTOM_MEANINGS_KEY)
-    if (raw) {
+  const raw = safeGetItem(CUSTOM_MEANINGS_KEY)
+  if (raw) {
+    try {
       const parsed = JSON.parse(raw)
       customMeaningsCache = parsed
       return parsed
+    } catch {
+      // Ignore parse errors
     }
-  } catch {
-    // Ignore parse errors
   }
 
   customMeaningsCache = {}
@@ -701,14 +702,10 @@ function loadCustomMeanings(): Record<string, Partial<CardMeaning>> {
 function saveCustomMeaningsToStorage(
   meanings: Record<string, Partial<CardMeaning>>,
 ): void {
-  if (typeof localStorage === 'undefined') return
+  if (!isStorageAvailable()) return
 
-  try {
-    localStorage.setItem(CUSTOM_MEANINGS_KEY, JSON.stringify(meanings))
-    customMeaningsCache = meanings
-  } catch {
-    // Storage might be full or disabled
-  }
+  safeSetItem(CUSTOM_MEANINGS_KEY, JSON.stringify(meanings))
+  customMeaningsCache = meanings
 }
 
 export function saveCustomMeaning(
@@ -730,9 +727,7 @@ export function hasCustomMeanings(): boolean {
 }
 
 export function clearCustomMeanings(): void {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem(CUSTOM_MEANINGS_KEY)
-  }
+  safeRemoveItem(CUSTOM_MEANINGS_KEY)
   customMeaningsCache = {}
 }
 

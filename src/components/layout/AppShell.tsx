@@ -4,6 +4,7 @@ import { SaveIndicator } from '@/components/SaveIndicator'
 import { SpreadCanvas } from '@/components/spread/SpreadCanvas'
 import { useShellStore } from '@/features/app/shell.store'
 import { useActiveSpreadContext } from '@/features/spread/useActiveSpreadContext'
+import { safeGetItem, safeSetItem, isStorageAvailable } from '@/utils/storage'
 
 const DETAILS_WIDTH_STORAGE_KEY = 'tarot-details-width-pct'
 const DETAILS_WIDTH_DEFAULT = 38
@@ -107,8 +108,8 @@ export function AppShell() {
   const detailsPanelOpen = useShellStore((s) => s.detailsPanelOpen)
   const toggleDetailsPanel = useShellStore((s) => s.toggleDetailsPanel)
   const [detailsWidthPct, setDetailsWidthPct] = useState(() => {
-    if (typeof localStorage === 'undefined') return DETAILS_WIDTH_DEFAULT
-    const raw = localStorage.getItem(DETAILS_WIDTH_STORAGE_KEY)
+    if (!isStorageAvailable()) return DETAILS_WIDTH_DEFAULT
+    const raw = safeGetItem(DETAILS_WIDTH_STORAGE_KEY)
     const v = raw === null ? NaN : Number(raw)
     if (!Number.isFinite(v)) return DETAILS_WIDTH_DEFAULT
     return Math.min(DETAILS_WIDTH_MAX, Math.max(DETAILS_WIDTH_MIN, v))
@@ -183,13 +184,9 @@ export function AppShell() {
         window.removeEventListener('pointerup', onUp)
         window.removeEventListener('pointercancel', onUp)
         setDetailsWidthPct((current) => {
-          try {
-            localStorage.setItem(DETAILS_WIDTH_STORAGE_KEY, String(current))
-          } catch {
-            /* ignore */
-          }
-          return current
-        })
+				safeSetItem(DETAILS_WIDTH_STORAGE_KEY, String(current))
+				return current
+			})
       }
 
       window.addEventListener('pointermove', onMove)
