@@ -222,7 +222,7 @@ export function AppShell() {
             <h2 className="text-label mb-2 text-ctp-overlay0">Spread layout</h2>
             {loadError ? (
               <p className="text-xs text-ctp-red" role="alert">
-                Could not open local storage.
+                Something went wrong. Try refreshing.
               </p>
             ) : null}
             {!ready && !loadError ? (
@@ -286,7 +286,7 @@ export function AppShell() {
           <h2 className="text-label mb-2 text-ctp-overlay0">Spread layout</h2>
           {loadError ? (
             <p className="text-xs text-ctp-red" role="alert">
-              Could not open local storage.
+              Something went wrong. Try refreshing.
             </p>
           ) : null}
           {!ready && !loadError ? (

@@ -2,6 +2,24 @@ import type { Spread } from '@/domain/types'
 import { SpreadSchema } from '@/domain/schemas'
 
 /**
+ * Generate a UUID, falling back to a polyfill if crypto.randomUUID is unavailable.
+ */
+function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    try {
+      return crypto.randomUUID()
+    } catch {
+      // Fall through to polyfill
+    }
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
+/**
  * Encodes a spread into a URL-safe string for sharing.
  * Uses base64url encoding (no special chars that break URLs).
  */
@@ -52,7 +70,7 @@ export function decodeSpreadFromUrl(encoded: string): Spread | null {
         p: { l: string; o: number; x: number; y: number; r: number },
         i: number,
       ) => ({
-        id: data.c?.[i]?.i || crypto.randomUUID(),
+        id: data.c?.[i]?.i || generateUUID(),
         label: p.l || '',
         order: p.o,
         x: p.x,
@@ -100,7 +118,7 @@ export function decodeSpreadFromUrl(encoded: string): Spread | null {
     }
 
     const spread = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       name: data.n || 'Shared spread',
       positions,
       placements,

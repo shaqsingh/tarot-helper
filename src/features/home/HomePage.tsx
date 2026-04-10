@@ -44,8 +44,7 @@ export function HomePage() {
   if (loadError) {
     return (
       <p className="text-ctp-red" role="alert">
-        Could not open local storage. Try another browser or disable private
-        mode.
+        Something went wrong loading the app. Try refreshing the page.
       </p>
     )
   }

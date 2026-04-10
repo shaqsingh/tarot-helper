@@ -263,7 +263,7 @@ export function MeaningsPage() {
   if (loadError) {
     return (
       <p className="text-ctp-red" role="alert">
-        Could not open local storage.
+        Something went wrong. Try refreshing.
       </p>
     )
   }
